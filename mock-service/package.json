@@ -1,0 +1,8 @@
+{
+  "name": "mock-soap-service",
+  "version": "1.0.0",
+  "description": "Mock SOAP Service for Testing",
+  "main": "app.js",
+  "dependencies": {},
+  "devDependencies": {}
+}

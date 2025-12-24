@@ -1,0 +1,54 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  demo-service
+  SAM Template for employee vinculation service and legacy SOAP mock.
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+
+Resources:
+  CoreFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: .
+      Handler: com.example.demo.StreamLambdaHandler::handleRequest
+      Runtime: java21
+      Architectures:
+        - x86_64
+      MemorySize: 512
+      Environment:
+        Variables:
+          SOAP_MOCK_URL: !Sub "http://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mock/soap"
+      Events:
+        VinculacionApi:
+          Type: Api
+          Properties:
+            Path: /api/vinculacion
+            Method: get
+
+  MockFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: mock-service/
+      Handler: app.handler
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Events:
+        SoapMockApi:
+          Type: Api
+          Properties:
+            Path: /mock/soap
+            Method: post
+
+Outputs:
+  VinculacionApi:
+    Description: "API Gateway endpoint URL for Prod stage for Core function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/vinculacion/"
+  MockSoapApi:
+    Description: "API Gateway endpoint URL for Prod stage for Mock function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mock/soap/"
