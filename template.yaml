@@ -10,6 +10,12 @@ Globals:
     MemorySize: 512
 
 Resources:
+  # Definimos un API específico para el Mock para romper el ciclo
+  MockApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: Prod
+
   CoreFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -19,9 +25,11 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 512
+      Timeout: 30
       Environment:
         Variables:
-          SOAP_MOCK_URL: !Sub "http://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mock/soap"
+          # Ahora Core depende de MockApi, no de sí mismo
+          SOAP_MOCK_URL: !Sub "https://${MockApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mock/soap"
       Events:
         VinculacionApi:
           Type: Api
@@ -44,11 +52,12 @@ Resources:
           Properties:
             Path: /mock/soap
             Method: post
+            RestApiId: !Ref MockApi # Vinculamos explícitamente al API de Mock
 
 Outputs:
   VinculacionApi:
-    Description: "API Gateway endpoint URL for Prod stage for Core function"
+    Description: "Endpoint URL para el Core Service"
     Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/api/vinculacion/"
   MockSoapApi:
-    Description: "API Gateway endpoint URL for Prod stage for Mock function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mock/soap/"
+    Description: "Endpoint URL para el Mock Service"
+    Value: !Sub "https://${MockApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/mock/soap/"
