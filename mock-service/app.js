@@ -1,7 +1,7 @@
 /**
  * Mock SOAP Service Lambda Handler
  */
-export async function handler(event) {
+exports.handler = async (event) => {
   console.log("Received event:", JSON.stringify(event, null, 2));
 
   const soapResponse = `<?xml version="1.0" encoding="UTF-8"?>

@@ -89,3 +89,27 @@ Mapeo de Respuesta: El sistema debe ser capaz de deserializar la respuesta del M
 Manejo de Errores de Conexión: Si el Mock no responde o da timeout, el servicio REST debe capturar la excepción y responder un mensaje de error amigable al usuario (HTTP 503 o 500 según corresponda).
 
 Logging: Se debe registrar en logs (INFO/DEBUG) el payload XML enviado y la respuesta recibida para fines de auditoría.
+
+HU-04: Despliegue en Entorno de AWS
+
+Título: Ejecución de Despliegue y Verificación en Producción
+Prioridad: Alta
+Estimación: 3 Puntos
+
+Descripción
+
+Como Desarrollador Senior,
+Quiero realizar el despliegue del stack completo en la nube de AWS,
+Para verificar que la solución es funcional en un entorno real y de alta disponibilidad.
+
+Criterios de Aceptación
+
+Verificación de Credenciales: Se debe validar la identidad del usuario de AWS antes de iniciar el proceso mediante `aws sts get-caller-identity`.
+
+Despliegue Exitoso: El comando `sam deploy` debe ejecutarse sin errores de dependencias circulares, asegurando que el Mock API y el Core API estén correctamente aislados.
+
+Configuración de Lambda: La función Core debe utilizar el `StreamLambdaHandler` para integrar correctamente Spring Boot 3 con el API Gateway de AWS.
+
+Verificación en Consola: Se debe confirmar visualmente la existencia de los recursos (Lambdas, API Gateway, Log Groups) en el portal de AWS.
+
+Prueba End-to-End: Al menos 5 casos de prueba (exitosos y fallidos) deben ser validados contra el endpoint de producción usando herramientas tipo `curl` o Postman.
